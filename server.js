@@ -1,20 +1,23 @@
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: 8080 });
 
-let connections = [];
+const PORT = 8080;
+const wss = new WebSocket.Server({ port: PORT });
 
-server.on('connection', (ws) => {
-    connections.push(ws);
+wss.on('connection', (ws) => {
+    console.log('A new client connected.');
+
     ws.on('message', (message) => {
-        connections.forEach((conn) => {
-            if (conn !== ws && conn.readyState === WebSocket.OPEN) {
-                conn.send(message);
-            }
-        });
+        console.log(`Received: ${message}`);
+        // Echo the received message back to the client
+        ws.send(`Server received: ${message}`);
     });
+
     ws.on('close', () => {
-        connections = connections.filter((conn) => conn !== ws);
+        console.log('A client disconnected.');
     });
+
+    // Send a welcome message to the client
+    ws.send('Welcome to the WebSocket server!');
 });
 
-console.log('WebSocket server is running on ws://localhost:8080');
+console.log(`WebSocket server is listening on ws://localhost:${PORT}`);
