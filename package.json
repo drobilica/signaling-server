@@ -1,16 +1,17 @@
 {
   "name": "signaling-server",
-  "version": "1.0.0",
-  "description": "This guide provides instructions to set up a WebRTC signaling server using Node.js and WebSocket on an Ubuntu system. ## Synopsys",
-  "main": "server.js",
+  "version": "0.0.2",
+  "description": "Signaling server for WebRTC",
+  "type": "module",
+  "main": "server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ws": "^8.18.0"
+    "ws": "^8.18.1"
   }
 }
