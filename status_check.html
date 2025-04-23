@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Status Dashboard</title>
+  <style>
+    body { font-family: sans-serif; margin: 1em; }
+    #controls { margin-bottom: 1em; }
+    #logs { width: 100%; height: 300px; font-family: monospace; white-space: pre-wrap; overflow-y: scroll; border: 1px solid #ccc; padding: 0.5em; }
+    #status { margin-left: 0.5em; font-weight: bold; }
+    input, button { padding: 0.5em; margin-right: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>WebSocket Status Dashboard</h1>
+  <div id="controls">
+    <label>WebSocket URL:
+      <input type="text" id="wsUrl" value="wss://ws.mydomain.com?token=YOUR_JWT_HERE" size="50" />
+    </label>
+    <button id="connectBtn">Connect</button>
+    <button id="disconnectBtn" disabled>Disconnect</button>
+    <span>Status: <span id="status">📴</span></span>
+  </div>
+  <div>
+    <button id="pingBtn" disabled>Send Ping</button>
+    <button id="joinBtn" disabled>Join Room</button>
+    <input type="text" id="roomInput" placeholder="Room name" />
+  </div>
+  <h2>Event Log</h2>
+  <div id="logs"></div>
+
+  <script>
+    let ws;
+    const logs = document.getElementById('logs');
+    const statusEl = document.getElementById('status');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const pingBtn = document.getElementById('pingBtn');
+    const joinBtn = document.getElementById('joinBtn');
+    const wsUrlInput = document.getElementById('wsUrl');
+    const roomInput = document.getElementById('roomInput');
+
+    function log(...args) {
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      logs.textContent += `[${new Date().toLocaleTimeString()}] ${msg}\n`;
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    connectBtn.addEventListener('click', () => {
+      const url = wsUrlInput.value.trim();
+      if (!url) return;
+      log('⚙️ Connecting to', url);
+      ws = new WebSocket(url);
+
+      ws.addEventListener('open', () => {
+        statusEl.textContent = '📶';
+        log('✅ Connection opened');
+        disconnectBtn.disabled = false;
+        pingBtn.disabled = false;
+        joinBtn.disabled = false;
+        connectBtn.disabled = true;
+      });
+
+      ws.addEventListener('message', ev => {
+        log('📨 Message received:', ev.data);
+      });
+
+      ws.addEventListener('error', err => {
+        statusEl.textContent = '❌';
+        log('❌ Error:', err);
+      });
+
+      ws.addEventListener('close', ev => {
+        statusEl.textContent = '📴';
+        log('🔒 Connection closed', 'code=' + ev.code, 'reason=' + ev.reason);
+        connectBtn.disabled = false;
+        disconnectBtn.disabled = true;
+        pingBtn.disabled = true;
+        joinBtn.disabled = true;
+      });
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+      if (ws) {
+        log('⚙️ Closing connection');
+        ws.close(1000, 'Client disconnect');
+      }
+    });
+
+    pingBtn.addEventListener('click', () => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        log('🏓 Sending ping');
+        ws.send(JSON.stringify({ type: 'ping' }));
+      }
+    });
+
+    joinBtn.addEventListener('click', () => {
+      const room = roomInput.value.trim();
+      if (ws && ws.readyState === WebSocket.OPEN && room) {
+        log('➡️ Joining room:', room);
+        ws.send(JSON.stringify({ type: 'join', room }));
+      }
+    });
+  </script>
+</body>
+</html>
+<!-- This HTML file provides a simple WebSocket client interface for testing and monitoring WebSocket connections. 
+     It allows users to connect to a WebSocket server, send ping messages, join rooms, and view event logs. 
+     The JavaScript code handles the WebSocket connection, events, and user interactions. -->

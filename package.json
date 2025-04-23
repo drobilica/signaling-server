@@ -1,7 +1,7 @@
 {
-  "name": "signaling-server",
+  "name": "websocket-server",
   "version": "0.0.2",
-  "description": "Signaling server for WebRTC",
+  "description": "Websocket server for WebRTC",
   "type": "module",
   "main": "server.mjs",
   "scripts": {

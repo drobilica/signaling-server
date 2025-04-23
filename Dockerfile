@@ -10,6 +10,8 @@ WORKDIR /usr/src/app
 # Copy manifests and install deps
 COPY package.json pnpm-lock.yaml ./
 ENV NODE_ENV=production
+RUN chown -R node:node /usr/src/app
+
 RUN pnpm install --frozen-lockfile --prod
 
 # Copy application source

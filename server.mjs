@@ -142,7 +142,7 @@ process.on('SIGTERM', shutdown);
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`WebSocket ES module listening on 0.0.0.0:${PORT}`);
-  console.log(`MAX_PAYLOAD=${MAX_PAYLOAD/1024/1024} MB`);
+  console.log(`MAX_PAYLOAD_MB=${MAX_PAYLOAD_MB} MB`);
   console.log('JWT_SECRET');
   console.log(`[93m${JWT_SECRET}[0m`);
   console.log('Press Ctrl+C to stop the server');
