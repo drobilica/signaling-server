@@ -1,20 +1,27 @@
 # Use the official Node.js LTS (Long Term Support) image
 FROM node:lts-alpine
 
+RUN npm install -g pnpm
+
+
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy manifests and install deps
+COPY package.json pnpm-lock.yaml ./
+ENV NODE_ENV=production
+RUN pnpm install --frozen-lockfile --prod
 
-# Install app dependencies
-RUN npm install --only=production
+# Copy application source
+COPY server.mjs ./
 
-# Copy the rest of the application code
-COPY . .
+# Expose port
+ARG PORT=8808
+ENV PORT=${PORT}
+EXPOSE ${PORT}
 
-# Expose the port the app runs on
-EXPOSE 8808
+# Run as non-root
+USER node
 
 # Define the command to run your app
 CMD [ "npm", "start" ]

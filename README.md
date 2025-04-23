@@ -12,6 +12,22 @@ This guide provides instructions to set up a WebRTC signaling server using Node.
 - Ubuntu 20.04 or later
 - Node.js and npm installed
 
+
+## Docker run and test 
+
+# Build the image (uses Podman behind the scenes)
+``` bash
+docker build -t ws-server .
+```
+
+# Run it, mapping ports and passing env vars
+```bash 
+docker run --rm -it \
+  -p 8808:8808 \
+  -e JWT_SECRET="$(openssl rand -hex 32)" \
+  -e MAX_PAYLOAD_MB=5 \
+  ws-server
+```
 ## Installation Steps
 
 1. **Update and Upgrade System Packages:**
@@ -44,7 +60,7 @@ This guide provides instructions to set up a WebRTC signaling server using Node.
 
     ```bash
     npm init -y
-    npm install ws
+    pnpm install ws
     ```
 
 ## Configuration and Code
@@ -174,3 +190,36 @@ To keep the server running in the background, you can use `pm2`, a process manag
     ```bash
     pm2 delete webrtc-signaling-server
     ```
+
+
+
+## Environment Variables
+
+Before you start the server, make sure to set the following environment variables:
+
+```bash
+# .env file (or export in your shell)
+
+# Port the server listens on (default: 8808)
+PORT=8808
+
+# Maximum allowed message size in bytes (default: 10 MB)
+MAX_PAYLOAD_BYTES=10485760
+
+# Secret key for signing and verifying JWTs (required)
+JWT_SECRET=your_jwt_secret_here
+```
+
+### Generate jwt secret
+
+``` bash
+# Using OpenSSL (hex-encoded, 64 characters = 32 bytes)
+openssl rand -hex 32
+```
+
+### or export directly to env that secret
+
+``` bash
+export JWT_SECRET="$(openssl rand -hex 32)" && npm start
+
+```
