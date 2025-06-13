@@ -17,12 +17,12 @@ This guide provides instructions to set up a WebRTC signaling server using Node.
 
 # Build the image (uses Podman behind the scenes)
 ``` bash
-docker build -t ws-server .
+podman build -t ws-server .
 ```
 
 # Run it, mapping ports and passing env vars
 ```bash 
-docker run --rm -it \
+podman run --rm -it \
   -p 8808:8808 \
   -e JWT_SECRET="$(openssl rand -hex 32)" \
   -e MAX_PAYLOAD_MB=5 \
